@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.LancamentoTempoPage"
+             x:DataType="vm:LancamentoTempoViewModel"
+             BackgroundColor="#99000000">
+    <ScrollView SafeAreaEdges="Container" VerticalOptions="Center">
+        <Border Style="{StaticResource Cartao}" MaximumWidthRequest="520" Margin="{OnIdiom Phone='12', Default='24'}" Padding="{OnIdiom Phone='18', Default='28'}">
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Lançar tempo" Style="{StaticResource Titulo}" />
+                    <Label Text="{Binding TituloTarefa}" Style="{StaticResource Legenda}" FontSize="14" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Dia" Style="{StaticResource Sobrelinha}" />
+                        <DatePicker Date="{Binding Dia}" MinimumDate="{Binding DiaMinimo}" MaximumDate="{Binding DiaMaximo}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Minutos" Style="{StaticResource Sobrelinha}" />
+                        <Entry Text="{Binding Minutos}" Keyboard="Numeric" FontFamily="PlexMono" FontSize="22" Placeholder="0" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <HorizontalStackLayout Spacing="8">
+                    <Button Text="+15" Style="{StaticResource Chip}" Command="{Binding SomarCommand}" CommandParameter="15" />
+                    <Button Text="+30" Style="{StaticResource Chip}" Command="{Binding SomarCommand}" CommandParameter="30" />
+                    <Button Text="+1h" Style="{StaticResource Chip}" Command="{Binding SomarCommand}" CommandParameter="60" />
+                    <Button Text="+2h" Style="{StaticResource Chip}" Command="{Binding SomarCommand}" CommandParameter="120" />
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Observação" Style="{StaticResource Sobrelinha}" />
+                    <Editor Text="{Binding Observacao}" Placeholder="Opcional" AutoSize="TextChanges" MaxLength="1000" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                    <Button Grid.Column="1" Text="Cancelar" Style="{StaticResource BotaoSecundario}" Command="{Binding CancelarCommand}" />
+                    <Button Grid.Column="2" Text="Lançar" Command="{Binding SalvarCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+</ContentPage>

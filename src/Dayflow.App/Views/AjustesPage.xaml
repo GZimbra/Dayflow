@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.AjustesPage"
+             x:DataType="vm:AjustesViewModel"
+             Title="Ajustes">
+    <ScrollView SafeAreaEdges="Container">
+        <VerticalStackLayout Padding="{OnIdiom Phone='16,16', Default='28,24'}" Spacing="20" MaximumWidthRequest="860" HorizontalOptions="Start">
+            <VerticalStackLayout>
+                <Label Text="preferências" Style="{StaticResource Sobrelinha}" />
+                <Label Text="Ajustes" Style="{StaticResource Display}" />
+            </VerticalStackLayout>
+
+            <!-- Lembretes -->
+            <Border Style="{StaticResource Cartao}">
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label Text="Lembretes de hora em hora" Style="{StaticResource Subtitulo}" />
+                            <Label Text="Mostra a atividade em andamento ou as pendências do dia, inclusive rotinas." Style="{StaticResource Legenda}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding LembretesAtivos}" VerticalOptions="Center" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="20" IsEnabled="{Binding LembretesAtivos}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Primeiro lembrete" Style="{StaticResource Sobrelinha}" />
+                            <Picker ItemsSource="{Binding Horas}" SelectedItem="{Binding HoraInicio}"
+                                    ItemDisplayBinding="{Binding ., StringFormat='{0:00}:00', x:DataType=x:Int32}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Último lembrete" Style="{StaticResource Sobrelinha}" />
+                            <Picker ItemsSource="{Binding Horas}" SelectedItem="{Binding HoraFim}"
+                                    ItemDisplayBinding="{Binding ., StringFormat='{0:00}:00', x:DataType=x:Int32}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <FlexLayout BindableLayout.ItemsSource="{Binding Dias}" Wrap="Wrap" IsEnabled="{Binding LembretesAtivos}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DiaOpcao">
+                                <Button Text="{Binding Sigla}" Style="{StaticResource Chip}" Margin="0,0,8,8" WidthRequest="64"
+                                        Command="{Binding AlternarDiaCommand, Source={RelativeSource AncestorType={x:Type vm:AjustesViewModel}}, x:DataType=vm:AjustesViewModel}"
+                                        CommandParameter="{Binding .}">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding Marcado}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource BaseLaranja}" />
+                                            <Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                    <Label Text="{Binding StatusLembretes}" FontFamily="ManropeSemiBold" TextColor="{StaticResource BaseLaranja}" />
+                    <Label Style="{StaticResource Legenda}"
+                           Text="Agendamento local do Android (AlarmManager inexato): pode atrasar alguns minutos para economizar bateria. Nenhuma conexão é usada." />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Aparência -->
+            <Border Style="{StaticResource Cartao}">
+                <Grid x:Name="GradeAparencia" ColumnDefinitions="*,240" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="12">
+                    <Label Text="Tema" Style="{StaticResource Subtitulo}" VerticalOptions="Center" />
+                    <Picker Grid.Column="1" ItemsSource="{Binding Temas}" SelectedItem="{Binding Tema}" />
+                    <Label Grid.Row="1" Text="Orientação da tela" Style="{StaticResource Subtitulo}" VerticalOptions="Center" />
+                    <Picker Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Orientacoes}" SelectedItem="{Binding Orientacao}" />
+                </Grid>
+            </Border>
+
+            <!-- Privacidade -->
+            <Border Style="{StaticResource Cartao}" BackgroundColor="{StaticResource BasePreto}" Stroke="{StaticResource BasePreto}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Privacidade" Style="{StaticResource Subtitulo}" TextColor="{StaticResource BaseBranco}" />
+                    <Label TextColor="#D4D4D4" FontSize="14"
+                           Text="O Dayflow funciona 100% offline. O app não tem permissão de acesso à internet, não usa conta, nuvem, anúncios, analytics nem relatório de falhas. O banco fica só neste aparelho e está excluído do backup do Google. Dados só saem quando você exporta um relatório ou o log pelo menu de compartilhamento." />
+                    <Button Text="Exportar log de diagnóstico" Style="{StaticResource BotaoSecundario}" BorderColor="{StaticResource BaseBranco}"
+                            TextColor="{StaticResource BaseBranco}" HorizontalOptions="Start" Command="{Binding ExportarLogCommand}" />
+                    <Label Text="{Binding Versao}" FontSize="12" TextColor="#8A8A8A" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.AgendaPage"
+             x:DataType="vm:AgendaViewModel"
+             Title="Agenda">
+
+    <ContentPage.Resources>
+        <!-- Altura da célula do calendário: 54 no tablet, menor no celular (AgendaPage.AplicarDensidade). -->
+        <x:Double x:Key="AltCelulaCal">54</x:Double>
+        <DataTemplate x:Key="CelulaDia" x:DataType="vm:DiaCalendarioVm">
+            <Grid HeightRequest="{DynamicResource AltCelulaCal}" Padding="3">
+                <Border x:Name="Celula" StrokeShape="RoundRectangle 14" StrokeThickness="0"
+                        BackgroundColor="Transparent">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding EhHoje}" Value="True">
+                            <Setter Property="Stroke" Value="{StaticResource BaseLaranja}" />
+                            <Setter Property="StrokeThickness" Value="2" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Border" Binding="{Binding Selecionado}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BasePreto}, Dark={StaticResource BaseBranco}}" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelecionarDiaCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                              CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="*,Auto" Padding="0,4">
+                        <Label Text="{Binding Numero}" FontFamily="ManropeSemiBold" FontSize="15"
+                               HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding DoMes}" Value="False">
+                                    <Setter Property="Opacity" Value="0.35" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding Selecionado}" Value="True">
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource BaseBranco}, Dark={StaticResource BasePreto}}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Ellipse Grid.Row="1" WidthRequest="6" HeightRequest="6" Fill="{StaticResource BaseLaranja}"
+                                 HorizontalOptions="Center" IsVisible="{Binding TemPendencia}" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid x:Name="Grade" Padding="{OnIdiom Phone='16,16', Default='28,24'}" ColumnSpacing="28" RowSpacing="20"
+          ColumnDefinitions="400,*" RowDefinitions="*">
+
+        <!-- ===== Painel do calendário ===== -->
+        <ScrollView x:Name="PainelCalendario" Grid.Column="0">
+            <VerticalStackLayout Spacing="20">
+                <Border Style="{StaticResource Painel}" Padding="16,18">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="4">
+                            <Label Text="{Binding TituloMes}" Style="{StaticResource Titulo}" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                            <Button Grid.Column="1" Text="Hoje" Style="{StaticResource Chip}" Command="{Binding IrParaHojeCommand}" />
+                            <ImageButton Grid.Column="2" Source="ic_esquerda_preto.png" Style="{StaticResource BotaoIcone}"
+                                         Command="{Binding AnteriorCommand}" SemanticProperties.Description="Anterior (mês ou semana)" />
+                            <ImageButton Grid.Column="3" Source="ic_direita_preto.png" Style="{StaticResource BotaoIcone}"
+                                         Command="{Binding SeguinteCommand}" SemanticProperties.Description="Seguinte (mês ou semana)" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="34,*">
+                        <Label Text="SEM" Style="{StaticResource Sobrelinha}" FontSize="10" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                        <Grid Grid.Column="1" ColumnDefinitions="*,*,*,*,*,*,*">
+                            <Label Grid.Column="0" Text="S" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="1" Text="T" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="2" Text="Q" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="3" Text="Q" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="4" Text="S" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="5" Text="S" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="6" Text="D" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="Center" />
+                        </Grid>
+                        </Grid>
+
+                        <!-- Mês inteiro (tablet, deitado, ou "Ver mês" no celular em pé) -->
+                        <Grid ColumnDefinitions="34,*" IsVisible="{Binding MesExpandido}">
+                        <!-- Número da semana ISO (toque = abre a segunda-feira da semana) -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Semanas}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SemanaVm">
+                                    <Grid HeightRequest="{DynamicResource AltCelulaCal}" Padding="2,3">
+                                        <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="Transparent">
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Atual}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LaranjaNevoa}, Dark={StaticResource LaranjaNevoaEscuro}}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding SelecionarSemanaCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="{Binding Numero}" FontFamily="PlexMono" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center"
+                                                   TextColor="{StaticResource LaranjaPressionado}" />
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <CollectionView x:Name="GradeMes" Grid.Column="1" ItemsSource="{Binding Dias}" SelectionMode="None" HeightRequest="324"
+                                        ItemTemplate="{StaticResource CelulaDia}">
+                            <CollectionView.ItemsLayout>
+                                <GridItemsLayout Orientation="Vertical" Span="7" />
+                            </CollectionView.ItemsLayout>
+                        </CollectionView>
+                        </Grid>
+
+                        <!-- Só a semana do dia selecionado (celular em pé) -->
+                        <Grid ColumnDefinitions="34,*" IsVisible="{Binding CalendarioRecolhido}">
+                            <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" Margin="2,3"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource LaranjaNevoa}, Dark={StaticResource LaranjaNevoaEscuro}}">
+                                <Label Text="{Binding SemanaIso}" FontFamily="PlexMono" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{StaticResource LaranjaPressionado}" />
+                            </Border>
+                            <CollectionView x:Name="FaixaSemana" Grid.Column="1" ItemsSource="{Binding DiasDaSemana}" SelectionMode="None" HeightRequest="54"
+                                            ItemTemplate="{StaticResource CelulaDia}">
+                                <CollectionView.ItemsLayout>
+                                    <GridItemsLayout Orientation="Vertical" Span="7" />
+                                </CollectionView.ItemsLayout>
+                            </CollectionView>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                            <Ellipse WidthRequest="6" HeightRequest="6" Fill="{StaticResource BaseLaranja}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="dia com pendências" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+                            <Button x:Name="BotaoAlternarCalendario" Grid.Column="2" Text="{Binding RotuloAlternarCalendario}" Style="{StaticResource BotaoTexto}"
+                                    Command="{Binding AlternarCalendarioCommand}" IsVisible="False" Padding="8,4" MinimumHeightRequest="36" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Resumo do dia -->
+                <Border Style="{StaticResource Cartao}">
+                    <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="2">
+                        <Label Text="registrado" Style="{StaticResource Sobrelinha}" />
+                        <Label Grid.Column="1" Text="abertas" Style="{StaticResource Sobrelinha}" />
+                        <Label Grid.Column="2" Text="concluídas" Style="{StaticResource Sobrelinha}" />
+                        <Label Grid.Row="1" Text="{Binding ResumoTempo}" Style="{StaticResource Titulo}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding ResumoAbertas}" Style="{StaticResource Titulo}" />
+                        <Label Grid.Row="1" Grid.Column="2" Text="{Binding ResumoConcluidas}" Style="{StaticResource Titulo}" TextColor="{StaticResource BaseLaranja}" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ===== Painel do dia ===== -->
+        <Grid x:Name="PainelDia" Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="14" MinimumHeightRequest="0">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="0">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="{StaticResource BasePreto}" Padding="8,2" VerticalOptions="Center">
+                            <Label Text="{Binding SemTitulo}" FontFamily="ManropeBold" FontSize="11.5" TextColor="{StaticResource BaseLaranja}" />
+                        </Border>
+                        <Label Text="{Binding SemanaDia}" Style="{StaticResource Sobrelinha}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label x:Name="TituloDiaLabel" Text="{Binding TituloDia}" Style="{StaticResource Display}" LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+                <Button x:Name="BotaoNova" Grid.Column="1" Text="+  Nova tarefa" VerticalOptions="End" Command="{Binding NovaTarefaCommand}" />
+            </Grid>
+
+            <!-- Lista | Por hora -->
+            <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+                <Button Text="Lista" Style="{StaticResource Chip}" Command="{Binding AlternarModoCommand}" CommandParameter="lista">
+                    <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ModoLista}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                    </DataTrigger></Button.Triggers>
+                </Button>
+                <Button Grid.Column="1" Text="Por hora" Style="{StaticResource Chip}" Command="{Binding AlternarModoCommand}" CommandParameter="hora">
+                    <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding ModoHora}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                    </DataTrigger></Button.Triggers>
+                </Button>
+                <Label Grid.Column="2" Text="{Binding SemHorarioResumo}" Style="{StaticResource Legenda}" VerticalOptions="Center"
+                       HorizontalTextAlignment="End" IsVisible="{Binding ModoHora}" LineBreakMode="WordWrap" />
+            </Grid>
+
+            <!-- Cronômetro em andamento -->
+            <Border x:Name="CartaoCronometro" Grid.Row="1" IsVisible="{Binding CronometroAtivo}" StrokeThickness="0" StrokeShape="RoundRectangle 18"
+                    Background="{StaticResource GradienteLaranja}" Padding="20,16">
+                <Grid x:Name="GradeCronometro" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="16">
+                    <Image x:Name="IconeCronometro" Source="ic_relogio.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                        <Label Text="EM ANDAMENTO" FontFamily="ManropeBold" FontSize="11" CharacterSpacing="1.4" TextColor="#FFE3D1" />
+                        <Label Text="{Binding CronometroTarefa}" FontFamily="ManropeSemiBold" FontSize="17"
+                               TextColor="{StaticResource BaseBranco}" LineBreakMode="WordWrap" MaxLines="3" />
+                    </VerticalStackLayout>
+                    <Label x:Name="CronometroTempoLabel" Grid.Column="2" Text="{Binding CronometroTempo}" FontFamily="PlexMono" FontSize="30"
+                           TextColor="{StaticResource BaseBranco}" VerticalOptions="Center" />
+                    <Button x:Name="BotaoPausar" Grid.Column="3" Text="Pausar" BackgroundColor="{StaticResource BasePreto}"
+                            TextColor="{StaticResource BaseBranco}" Command="{Binding PausarCronometroCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- Visão hora a hora: toque na hora para encaixar uma atividade -->
+            <CollectionView x:Name="ListaHoras" Grid.Row="3" ItemsSource="{Binding Horas}" SelectionMode="None" IsVisible="{Binding ModoHora}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:HoraVm">
+                        <Grid ColumnDefinitions="64,*" MinimumHeightRequest="58" Opacity="{Binding Opacidade}">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToqueHoraCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                      CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                            <Label Text="{Binding Rotulo}" FontFamily="PlexMono" FontSize="13" VerticalOptions="Start" Margin="0,8,0,0"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextoSuave}, Dark={StaticResource TextoSuaveEscuro}}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Agora}" Value="True">
+                                        <Setter Property="TextColor" Value="{StaticResource BaseLaranja}" />
+                                        <Setter Property="FontAttributes" Value="Bold" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                            <Border Grid.Column="1" StrokeThickness="0" BackgroundColor="Transparent" Padding="0,4">
+                                <VerticalStackLayout Spacing="6">
+                                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}">
+                                        <BoxView.Triggers>
+                                            <DataTrigger TargetType="BoxView" Binding="{Binding Agora}" Value="True">
+                                                <Setter Property="Color" Value="{StaticResource BaseLaranja}" />
+                                                <Setter Property="HeightRequest" Value="2" />
+                                            </DataTrigger>
+                                        </BoxView.Triggers>
+                                    </BoxView>
+                                    <Label Text="toque para planejar" Style="{StaticResource Legenda}" FontSize="12" IsVisible="{Binding Vazia}" Opacity="0.55" Margin="4,6,0,8" />
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Itens}" Spacing="6">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ItemTarefaVm">
+                                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="0" Opacity="{Binding Opacidade}"
+                                                        BackgroundColor="{AppThemeBinding Light={StaticResource LaranjaNevoa}, Dark={StaticResource LaranjaNevoaEscuro}}">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding ToqueItemHoraCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                                              CommandParameter="{Binding .}" />
+                                                    </Border.GestureRecognizers>
+                                                    <Grid ColumnDefinitions="5,*,Auto" ColumnSpacing="12">
+                                                        <BoxView Color="{Binding CorProjeto}" />
+                                                        <VerticalStackLayout Grid.Column="1" Padding="0,8" Spacing="1">
+                                                            <Label Text="{Binding Titulo}" FontFamily="ManropeSemiBold" FontSize="14.5"
+                                                                   TextDecorations="{Binding Decoracao}" LineBreakMode="WordWrap" />
+                                                            <Label Text="{Binding Projeto}" Style="{StaticResource Legenda}" FontSize="12" />
+                                                        </VerticalStackLayout>
+                                                        <Label Grid.Column="2" Text="{Binding Horario}" FontFamily="PlexMono" FontSize="12.5" Margin="0,0,12,0"
+                                                               TextColor="{StaticResource LaranjaPressionado}" VerticalOptions="Center" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView x:Name="Lista" Grid.Row="3" ItemsSource="{Binding Tarefas}" SelectionMode="None" IsVisible="{Binding ModoLista}"
+                            CanReorderItems="True" ReorderCompleted="AoReordenar">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="0,60" Spacing="8" HorizontalOptions="Center">
+                        <Label Text="Dia livre" Style="{StaticResource Titulo}" HorizontalTextAlignment="Center" />
+                        <Label Text="Nenhuma tarefa ou rotina para este dia." Style="{StaticResource Legenda}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ItemTarefaVm">
+                        <Border Style="{StaticResource Cartao}" Padding="0" Opacity="{Binding Opacidade}">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Rodando}" Value="True">
+                                    <Setter Property="Stroke" Value="{StaticResource BaseLaranja}" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Grid ColumnDefinitions="6,60,*,Auto" MinimumHeightRequest="76">
+                                <BoxView Color="{Binding CorProjeto}" />
+
+                                <!-- Concluir / reabrir -->
+                                <Border Grid.Column="1" WidthRequest="30" HeightRequest="30" StrokeShape="RoundRectangle 15"
+                                        StrokeThickness="2" Stroke="{AppThemeBinding Light={StaticResource TextoSuave}, Dark={StaticResource TextoSuaveEscuro}}"
+                                        HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Concluida}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" />
+                                            <Setter Property="Stroke" Value="{StaticResource BaseLaranja}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding AlternarConclusaoCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Image Source="ic_check.png" WidthRequest="16" HeightRequest="16" IsVisible="{Binding Concluida}" />
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="2" Padding="0,14" Spacing="6" VerticalOptions="Center">
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding EditarCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                              CommandParameter="{Binding .}" />
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <Label Text="{Binding Titulo}" Style="{StaticResource Subtitulo}" TextDecorations="{Binding Decoracao}"
+                                           LineBreakMode="WordWrap" />
+                                    <FlexLayout Wrap="Wrap" AlignItems="Center" JustifyContent="Start">
+                                        <Label Text="{Binding Projeto}" Style="{StaticResource Legenda}" Margin="0,0,12,0" />
+                                        <Border IsVisible="{Binding EhRotina}" StrokeThickness="0" StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource LaranjaNevoa}, Dark={StaticResource LaranjaNevoaEscuro}}"
+                                                Padding="8,2" Margin="0,0,8,0">
+                                            <Label Text="Rotina" FontFamily="ManropeBold" FontSize="11.5" TextColor="{StaticResource LaranjaPressionado}" />
+                                        </Border>
+                                        <Border IsVisible="{Binding MultiDia}" StrokeThickness="1" StrokeShape="RoundRectangle 8"
+                                                Stroke="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}"
+                                                Padding="8,2" Margin="0,0,8,0">
+                                            <Label Text="{Binding DiaDaTarefa}" FontFamily="ManropeBold" FontSize="11.5" />
+                                        </Border>
+                                        <Border IsVisible="{Binding Atrasada}" StrokeThickness="0" StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="{StaticResource Perigo}" Padding="8,2" Margin="0,0,8,0">
+                                            <Label Text="Atrasada" FontFamily="ManropeBold" FontSize="11.5" TextColor="{StaticResource BaseBranco}" />
+                                        </Border>
+                                        <Border IsVisible="{Binding TemHorario}" StrokeThickness="0" StrokeShape="RoundRectangle 8"
+                                                BackgroundColor="{StaticResource BasePreto}" Padding="8,2" Margin="0,0,8,0">
+                                            <Label Text="{Binding Horario}" FontFamily="PlexMono" FontSize="11.5" TextColor="{StaticResource BaseBranco}" />
+                                        </Border>
+                                        <Label Text="{Binding Prazo}" IsVisible="{Binding TemPrazo}" Style="{StaticResource Legenda}" Margin="0,0,12,0" />
+                                        <Label Text="{Binding TempoNoDia}" IsVisible="{Binding TemTempo}" FontFamily="PlexMono" FontSize="12.5"
+                                               TextColor="{StaticResource BaseLaranja}" />
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+
+                                <HorizontalStackLayout Grid.Column="3" Spacing="2" Padding="0,0,10,0" VerticalOptions="Center">
+                                    <ImageButton Source="ic_play_laranja.png" Style="{StaticResource BotaoIcone}" IsVisible="{Binding Aberta}"
+                                                 SemanticProperties.Description="Iniciar ou pausar cronômetro"
+                                                 Command="{Binding AlternarCronometroCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                                 CommandParameter="{Binding .}">
+                                        <ImageButton.Triggers>
+                                            <DataTrigger TargetType="ImageButton" Binding="{Binding Rodando}" Value="True">
+                                                <Setter Property="Source" Value="ic_pause.png" />
+                                                <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" />
+                                            </DataTrigger>
+                                        </ImageButton.Triggers>
+                                    </ImageButton>
+                                    <Button Text="•••" Style="{StaticResource BotaoTexto}" FontSize="16"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextoSuave}, Dark={StaticResource TextoSuaveEscuro}}"
+                                            SemanticProperties.Description="Mais ações"
+                                            Command="{Binding MaisAcoesCommand, Source={RelativeSource AncestorType={x:Type vm:AgendaViewModel}}, x:DataType=vm:AgendaViewModel}"
+                                            CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.Footer>
+                    <VerticalStackLayout Padding="0,16,0,32" Spacing="8" IsVisible="{Binding TemPrevistas}">
+                        <Label Text="Rotinas previstas" Style="{StaticResource Sobrelinha}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding RotinasPrevistas}" Spacing="6">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border StrokeShape="RoundRectangle 12" StrokeDashArray="4,3" StrokeThickness="1.5"
+                                            Stroke="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}" Padding="16,12">
+                                        <HorizontalStackLayout Spacing="10">
+                                            <Image Source="ic_rotina_laranja.png" WidthRequest="18" HeightRequest="18" />
+                                            <Label Text="{Binding .}" Style="{StaticResource Legenda}" FontSize="14" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </CollectionView.Footer>
+            </CollectionView>
+        </Grid>
+    </Grid>
+</ContentPage>

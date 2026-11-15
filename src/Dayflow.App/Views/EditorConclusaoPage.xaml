@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.EditorConclusaoPage"
+             x:DataType="vm:EditorConclusaoViewModel"
+             BackgroundColor="#99000000">
+    <ScrollView SafeAreaEdges="Container" VerticalOptions="Center">
+        <Border Style="{StaticResource Cartao}" MaximumWidthRequest="640" Margin="{OnIdiom Phone='12', Default='24'}" Padding="{OnIdiom Phone='18', Default='28'}">
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Relatório de conclusão" Style="{StaticResource Titulo}" />
+                    <Label Style="{StaticResource Legenda}" FontSize="14">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding TituloTarefa}" />
+                                <Span Text=" · " />
+                                <Span Text="{Binding Projeto}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="O que foi feito" Style="{StaticResource Sobrelinha}" />
+                    <Editor Text="{Binding Resumo}" Placeholder="Explique em poucas linhas o que a entrega resolve" AutoSize="TextChanges" MaxLength="4000" HeightRequest="120" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Quem se beneficia" Style="{StaticResource Sobrelinha}" />
+                    <Entry Text="{Binding Beneficiados}" Placeholder="Ex.: Expedição, turno B" MaxLength="200" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Minutos poupados" Style="{StaticResource Sobrelinha}" />
+                        <Entry Text="{Binding Minutos}" Keyboard="Numeric" FontFamily="PlexMono" FontSize="22" Placeholder="0" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Pessoas" Style="{StaticResource Sobrelinha}" />
+                        <Entry Text="{Binding Pessoas}" Keyboard="Numeric" FontFamily="PlexMono" FontSize="22" Placeholder="1" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Frequência" Style="{StaticResource Sobrelinha}" />
+                        <Picker ItemsSource="{Binding Frequencias}" SelectedItem="{Binding Frequencia}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Border Style="{StaticResource Cartao}" Padding="16" BackgroundColor="{StaticResource BasePreto}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="ESTIMATIVA" TextColor="{StaticResource BaseLaranja}" FontSize="12" FontFamily="ManropeBold" />
+                        <Label Text="{Binding Previa}" TextColor="{StaticResource BaseBranco}" FontFamily="PlexMono" FontSize="18" />
+                        <Label Text="Minutos × pessoas por ocorrência. Mês: dia útil × 21, semana × 52/12. Valores informados por você."
+                               TextColor="#B3FFFFFF" FontSize="12" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                    <Button Text="Remover" Style="{StaticResource BotaoSecundario}" Command="{Binding RemoverCommand}" IsVisible="{Binding Existente}" />
+                    <Button Grid.Column="2" Text="Agora não" Style="{StaticResource BotaoSecundario}" Command="{Binding CancelarCommand}" />
+                    <Button Grid.Column="3" Text="Salvar" Command="{Binding SalvarCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.SeletorPeriodoView"
+             x:DataType="vm:SeletorPeriodo">
+    <FlexLayout Wrap="Wrap" AlignItems="Center" JustifyContent="SpaceBetween">
+        <HorizontalStackLayout Spacing="8" Margin="0,0,0,8">
+            <Button Text="Dia" Style="{StaticResource Chip}" Command="{Binding DefinirModoCommand}" CommandParameter="Dia">
+                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding EhDia}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                </DataTrigger></Button.Triggers>
+            </Button>
+            <Button Text="Semana" Style="{StaticResource Chip}" Command="{Binding DefinirModoCommand}" CommandParameter="Semana">
+                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding EhSemana}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                </DataTrigger></Button.Triggers>
+            </Button>
+            <Button Text="Mês" Style="{StaticResource Chip}" Command="{Binding DefinirModoCommand}" CommandParameter="Mes">
+                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding EhMes}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                </DataTrigger></Button.Triggers>
+            </Button>
+            <Button Text="Intervalo" Style="{StaticResource Chip}" Command="{Binding DefinirModoCommand}" CommandParameter="Personalizado">
+                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding EhPersonalizado}" Value="True">
+                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                </DataTrigger></Button.Triggers>
+            </Button>
+        </HorizontalStackLayout>
+
+        <HorizontalStackLayout Spacing="4" IsVisible="{Binding Navegavel}" Margin="0,0,0,8">
+            <ImageButton Source="ic_esquerda_preto.png" Style="{StaticResource BotaoIcone}" Command="{Binding AnteriorCommand}" SemanticProperties.Description="Período anterior" />
+            <Label Text="{Binding Rotulo}" Style="{StaticResource Subtitulo}" VerticalOptions="Center" MinimumWidthRequest="140" HorizontalTextAlignment="Center" />
+            <ImageButton Source="ic_direita_preto.png" Style="{StaticResource BotaoIcone}" Command="{Binding SeguinteCommand}" SemanticProperties.Description="Próximo período" />
+            <Button Text="Atual" Style="{StaticResource BotaoTexto}" Command="{Binding HojeCommand}" />
+        </HorizontalStackLayout>
+
+        <HorizontalStackLayout Spacing="12" IsVisible="{Binding EhPersonalizado}" Margin="0,0,0,8">
+            <Label Text="De" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+            <DatePicker Date="{Binding Inicio}" />
+            <Label Text="até" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+            <DatePicker Date="{Binding Fim}" />
+        </HorizontalStackLayout>
+    </FlexLayout>
+</ContentView>

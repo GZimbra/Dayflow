@@ -1,0 +1,14 @@
+bin/
+obj/
+*.user
+.vs/
+*.keystore
+*.jks
+
+# Binários e assinatura (nunca versionar)
+*.apk
+*.aab
+*.idsig
+assinatura/
+LEIA-ME-assinatura.txt
+javac.*.args

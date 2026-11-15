@@ -1,0 +1,4 @@
+Fontes embarcadas no APK (nenhuma é baixada em runtime):
+- Manrope (Regular, SemiBold, Bold) — SIL Open Font License 1.1 — https://github.com/sharanda/manrope
+- IBM Plex Mono (Medium) — SIL Open Font License 1.1 — https://github.com/IBM/plex
+Obtidas uma única vez no momento do desenvolvimento e versionadas junto do código.

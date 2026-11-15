@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  TOKENS DE COR — Dayflow
+  Base definida pelo usuário: PRETO, LARANJA e BRANCO.
+  ⚠ PROVISÓRIO: hex abaixo são escolhas próprias até chegar o guia oficial da marca.
+    Para trocar, altere SOMENTE os três valores "Base*"; os derivados existem só para estados e textos.
+  Sufixo "Escuro" = variante do tema escuro (usada via AppThemeBinding).
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <!-- BASE (provisória) -->
+    <Color x:Key="BasePreto">#111111</Color>
+    <Color x:Key="BaseLaranja">#F26A1B</Color>
+    <Color x:Key="BaseBranco">#FFFFFF</Color>
+
+    <!-- Derivados do laranja: estados -->
+    <Color x:Key="LaranjaPressionado">#D9550A</Color>
+    <Color x:Key="LaranjaNevoa">#FDE6D7</Color>
+    <Color x:Key="LaranjaNevoaEscuro">#3A1E0C</Color>
+
+    <!-- Derivados do preto/branco: superfícies e textos -->
+    <Color x:Key="Fundo">#F6F6F4</Color>
+    <Color x:Key="FundoEscuro">#0A0A0A</Color>
+    <Color x:Key="Superficie">#FFFFFF</Color>
+    <Color x:Key="SuperficieEscuro">#161616</Color>
+    <Color x:Key="SuperficieAlta">#FAFAF9</Color>
+    <Color x:Key="SuperficieAltaEscuro">#1E1E1E</Color>
+    <Color x:Key="Linha">#E5E5E2</Color>
+    <Color x:Key="LinhaEscuro">#2B2B2B</Color>
+    <Color x:Key="Texto">#111111</Color>
+    <Color x:Key="TextoEscuro">#F5F5F5</Color>
+    <Color x:Key="TextoSuave">#6B6B6B</Color>
+    <Color x:Key="TextoSuaveEscuro">#A3A3A3</Color>
+    <Color x:Key="Trilho">#111111</Color>
+    <Color x:Key="TrilhoEscuro">#000000</Color>
+
+    <!-- Estados semânticos (uso mínimo) -->
+    <Color x:Key="Sucesso">#2E9E6A</Color>
+    <Color x:Key="Perigo">#D64541</Color>
+
+    <LinearGradientBrush x:Key="GradienteLaranja" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F26A1B" Offset="0" />
+        <GradientStop Color="#D9550A" Offset="1" />
+    </LinearGradientBrush>
+</ResourceDictionary>

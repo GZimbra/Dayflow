@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Ícones vetoriais autorais (grade 24x24, traço). Sem fonte de ícones externa.
+     Os mesmos traços são gerados como SVG em Resources/Images/ic_*.svg para Shell/ImageButton. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <PathGeometry x:Key="IcAgenda" Figures="M4,6 A2,2 0 0 1 6,4 H18 A2,2 0 0 1 20,6 V18 A2,2 0 0 1 18,20 H6 A2,2 0 0 1 4,18 Z M4,9 H20 M8,2.5 V5.5 M16,2.5 V5.5 M8,13 H10 M14,13 H16 M8,16.5 H10" />
+    <PathGeometry x:Key="IcRelatorio" Figures="M6,3 H14 L19,8 V20 A1,1 0 0 1 18,21 H6 A1,1 0 0 1 5,20 V4 A1,1 0 0 1 6,3 Z M14,3 V8 H19 M8.5,12.5 H15.5 M8.5,16 H13" />
+    <PathGeometry x:Key="IcGrafico" Figures="M4,20 H20 M7,20 V12 M12,20 V6 M17,20 V15" />
+    <PathGeometry x:Key="IcProjetos" Figures="M3,7 A2,2 0 0 1 5,5 H9.5 L11.5,7.5 H19 A2,2 0 0 1 21,9.5 V17 A2,2 0 0 1 19,19 H5 A2,2 0 0 1 3,17 Z" />
+    <PathGeometry x:Key="IcAjustes" Figures="M4,7 H13 M17,7 H20 M4,17 H7 M11,17 H20 M15,4.5 V9.5 M9,14.5 V19.5" />
+    <PathGeometry x:Key="IcPlay" Figures="M8,5.5 L18.5,12 L8,18.5 Z" />
+    <PathGeometry x:Key="IcPause" Figures="M8,5.5 V18.5 M16,5.5 V18.5" />
+    <PathGeometry x:Key="IcCheck" Figures="M5,12.5 L10,17.5 L19,7" />
+    <PathGeometry x:Key="IcFechar" Figures="M6,6 L18,18 M18,6 L6,18" />
+    <PathGeometry x:Key="IcMais" Figures="M12,5 V19 M5,12 H19" />
+    <PathGeometry x:Key="IcRelogio" Figures="M12,3.5 A8.5,8.5 0 1 1 11.99,3.5 Z M12,7.5 V12 L15,14" />
+    <PathGeometry x:Key="IcEsquerda" Figures="M15,5 L8,12 L15,19" />
+    <PathGeometry x:Key="IcDireita" Figures="M9,5 L16,12 L9,19" />
+    <PathGeometry x:Key="IcCompartilhar" Figures="M12,3 V15 M7.5,7.5 L12,3 L16.5,7.5 M5,12 V19 A1,1 0 0 0 6,20 H18 A1,1 0 0 0 19,19 V12" />
+    <PathGeometry x:Key="IcReabrir" Figures="M5,12 A7,7 0 1 0 7.05,7.05 M5,4 V8 H9" />
+    <PathGeometry x:Key="IcLixeira" Figures="M5,7 H19 M10,7 V4.5 H14 V7 M7,7 L8,20 H16 L17,7" />
+    <PathGeometry x:Key="IcArquivo" Figures="M4,5 H20 V9 H4 Z M5,9 V19 H19 V9 M10,13 H14" />
+    <PathGeometry x:Key="IcMultiDia" Figures="M3,12 H8 M10,12 H14 M16,12 H21 M18,9 L21,12 L18,15" />
+    <PathGeometry x:Key="IcRotina" Figures="M17,3 L20,6 L17,9 M4,11 V9 A3,3 0 0 1 7,6 H20 M7,21 L4,18 L7,15 M20,13 V15 A3,3 0 0 1 17,18 H4" />
+</ResourceDictionary>

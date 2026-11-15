@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.ProjetosPage"
+             x:DataType="vm:ProjetosViewModel"
+             Title="Projetos">
+    <Grid Padding="{OnIdiom Phone='16,16', Default='28,24'}" RowDefinitions="Auto,*" RowSpacing="20" MaximumWidthRequest="1100">
+        <Grid x:Name="Cabecalho" ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="8">
+            <VerticalStackLayout>
+                <Label Text="organização" Style="{StaticResource Sobrelinha}" />
+                <Label Text="Projetos" Style="{StaticResource Display}" />
+            </VerticalStackLayout>
+            <HorizontalStackLayout x:Name="LinhaArquivados" Grid.Column="1" Spacing="8" VerticalOptions="End">
+                <Label Text="Mostrar arquivados" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+                <Switch IsToggled="{Binding MostrarArquivados}" />
+            </HorizontalStackLayout>
+            <Button x:Name="BotaoNovo" Grid.Column="2" Text="+  Novo projeto" VerticalOptions="End" Command="{Binding NovoCommand}" />
+        </Grid>
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Itens}" SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout x:Name="LayoutGrade" Orientation="Vertical" Span="3" HorizontalItemSpacing="14" VerticalItemSpacing="14" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Padding="0,60" Spacing="8" HorizontalOptions="Center">
+                    <Label Text="Nenhum projeto" Style="{StaticResource Titulo}" HorizontalTextAlignment="Center" />
+                    <Label Text="Projetos agrupam tarefas nos relatórios e gráficos." Style="{StaticResource Legenda}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ProjetoItemVm">
+                    <Border Style="{StaticResource Cartao}" Padding="0" Opacity="{Binding Opacidade}">
+                        <Grid RowDefinitions="8,*,Auto">
+                            <BoxView Color="{Binding Cor}" />
+                            <Label Grid.Row="1" Text="{Binding Nome}" Style="{StaticResource Subtitulo}" Margin="20,18,20,8" LineBreakMode="WordWrap" />
+                            <HorizontalStackLayout Grid.Row="2" Padding="10,0,10,8" Spacing="0">
+                                <Button Text="Editar" Style="{StaticResource BotaoTexto}"
+                                        Command="{Binding EditarCommand, Source={RelativeSource AncestorType={x:Type vm:ProjetosViewModel}}, x:DataType=vm:ProjetosViewModel}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="{Binding AcaoArquivo}" Style="{StaticResource BotaoTexto}"
+                                        Command="{Binding AlternarArquivoCommand, Source={RelativeSource AncestorType={x:Type vm:ProjetosViewModel}}, x:DataType=vm:ProjetosViewModel}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="Excluir" Style="{StaticResource BotaoTexto}" TextColor="{StaticResource Perigo}"
+                                        Command="{Binding ExcluirCommand, Source={RelativeSource AncestorType={x:Type vm:ProjetosViewModel}}, x:DataType=vm:ProjetosViewModel}"
+                                        CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

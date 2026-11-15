@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.EditorTarefaPage"
+             x:DataType="vm:EditorTarefaViewModel"
+             BackgroundColor="#99000000">
+    <ScrollView SafeAreaEdges="Container" VerticalOptions="Center">
+        <Border Style="{StaticResource Cartao}" MaximumWidthRequest="620" Margin="{OnIdiom Phone='12', Default='24'}" Padding="{OnIdiom Phone='18', Default='28'}">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="{Binding Cabecalho}" Style="{StaticResource Titulo}" />
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Título" Style="{StaticResource Sobrelinha}" />
+                    <Entry Text="{Binding Titulo}" Placeholder="Ex.: Conferir inventário da doca 3" MaxLength="200" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Descrição" Style="{StaticResource Sobrelinha}" />
+                    <Editor Text="{Binding Descricao}" Placeholder="Opcional" AutoSize="TextChanges" MinimumHeightRequest="80" MaxLength="4000" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Projeto" Style="{StaticResource Sobrelinha}" />
+                    <Picker ItemsSource="{Binding Projetos}" SelectedItem="{Binding Projeto}" ItemDisplayBinding="{Binding Nome, x:DataType=vm:ProjetoOpcao}" />
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="20" IsVisible="{Binding EhRotina, Converter={StaticResource Negar}}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Início" Style="{StaticResource Sobrelinha}" />
+                        <DatePicker Date="{Binding DataInicio}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <HorizontalStackLayout Spacing="6">
+                            <CheckBox IsChecked="{Binding TemPrazo}" VerticalOptions="Center" />
+                            <Label Text="Prazo" Style="{StaticResource Sobrelinha}" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <DatePicker Date="{Binding DataFimPrevista}" IsEnabled="{Binding TemPrazo}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <!-- Horário planejado (visão hora a hora) -->
+                <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="16">
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="End">
+                        <CheckBox IsChecked="{Binding TemHorario}" VerticalOptions="Center" />
+                        <Label Text="{Binding RotuloDiaHorario}" Style="{StaticResource Sobrelinha}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="Começa às" Style="{StaticResource Sobrelinha}" />
+                        <TimePicker Time="{Binding Horario}" Format="HH:mm" IsEnabled="{Binding TemHorario}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Duração" Style="{StaticResource Sobrelinha}" />
+                        <Picker ItemsSource="{Binding OpcoesDuracao}"
+                                SelectedItem="{Binding Duracao}" IsEnabled="{Binding TemHorario}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Label IsVisible="{Binding EhRotina}" Style="{StaticResource Legenda}"
+                       Text="Instância de rotina: vale só para este dia. Para mudar dias e horários, edite a rotina." />
+
+                <Label Style="{StaticResource Legenda}" IsVisible="{Binding EhRotina, Converter={StaticResource Negar}}"
+                       Text="Tarefas de vários dias aparecem em todos os dias até serem concluídas ou canceladas." />
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+                    <Button Grid.Column="1" Text="Cancelar" Style="{StaticResource BotaoSecundario}" Command="{Binding CancelarCommand}" />
+                    <Button Grid.Column="2" Text="Salvar" Command="{Binding SalvarCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+</ContentPage>

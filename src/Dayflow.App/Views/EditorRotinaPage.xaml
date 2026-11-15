@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.EditorRotinaPage"
+             x:DataType="vm:EditorRotinaViewModel"
+             BackgroundColor="#99000000">
+    <ScrollView SafeAreaEdges="Container" VerticalOptions="Center">
+        <Border Style="{StaticResource Cartao}" MaximumWidthRequest="620" Margin="{OnIdiom Phone='12', Default='24'}" Padding="{OnIdiom Phone='18', Default='28'}">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="{Binding Cabecalho}" Style="{StaticResource Titulo}" />
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Atividade" Style="{StaticResource Sobrelinha}" />
+                    <Entry Text="{Binding Titulo}" Placeholder="Ex.: Checklist de abertura da expedição" MaxLength="200" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Descrição" Style="{StaticResource Sobrelinha}" />
+                    <Editor Text="{Binding Descricao}" Placeholder="Opcional" AutoSize="TextChanges" MaxLength="4000" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Repete em" Style="{StaticResource Sobrelinha}" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding DiasOpcoes}" Wrap="Wrap">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DiaOpcao">
+                                <Button Text="{Binding Sigla}" Style="{StaticResource Chip}" Margin="0,0,8,8" WidthRequest="64"
+                                        Command="{Binding AlternarDiaCommand, Source={RelativeSource AncestorType={x:Type vm:EditorRotinaViewModel}}, x:DataType=vm:EditorRotinaViewModel}"
+                                        CommandParameter="{Binding .}">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding Marcado}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" />
+                                            <Setter Property="BorderColor" Value="{StaticResource BaseLaranja}" />
+                                            <Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Projeto" Style="{StaticResource Sobrelinha}" />
+                        <Picker ItemsSource="{Binding Projetos}" SelectedItem="{Binding Projeto}" ItemDisplayBinding="{Binding Nome, x:DataType=vm:ProjetoOpcao}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="A partir de" Style="{StaticResource Sobrelinha}" />
+                        <DatePicker Date="{Binding DataInicio}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Label Style="{StaticResource Legenda}"
+                       Text="Cada dia gera uma atividade própria. Se não for feita, fica registrada como pendente naquele dia e não se acumula." />
+
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12" Margin="0,8,0,0">
+                    <Button Grid.Column="1" Text="Cancelar" Style="{StaticResource BotaoSecundario}" Command="{Binding CancelarCommand}" />
+                    <Button Grid.Column="2" Text="Salvar" Command="{Binding SalvarCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+</ContentPage>

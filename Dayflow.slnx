@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Dayflow.App/Dayflow.App.csproj" />
+    <Project Path="src/Dayflow.Core/Dayflow.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Dayflow.Core.Tests/Dayflow.Core.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Alvo de produção: net10.0-android (API mínima 26).
+    net10.0 (sem plataforma) existe só para compilar ViewModels/XAML em CI/Linux sem Android SDK.
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android;net10.0</TargetFrameworks>
+    <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <RootNamespace>Dayflow.App</RootNamespace>
+    <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
+
+    <ApplicationTitle>Dayflow</ApplicationTitle>
+    <ApplicationId>com.dayflow.app</ApplicationId>
+    <ApplicationDisplayVersion>1.4.1</ApplicationDisplayVersion>
+    <ApplicationVersion>11</ApplicationVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Android: manifesto estrito em Release. Debug usa manifesto sem as remoções
+       (o depurador .NET precisa de socket local => INTERNET). -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidManifest Condition="'$(Configuration)' == 'Debug'">Platforms/Android/Debug/AndroidManifest.xml</AndroidManifest>
+    <AndroidNeedsInternetPermission Condition="'$(Configuration)' == 'Release'">false</AndroidNeedsInternetPermission>
+    <!-- Merger do Google: necessário para tools:node="remove" agir sobre permissões de AARs. -->
+    <AndroidManifestMerger>manifestmerger.jar</AndroidManifestMerger>
+    <!-- APK para instalação direta. AAB (Play) sob demanda: -p:DayflowFormatos=aab -->
+    <DayflowFormatos Condition="'$(DayflowFormatos)' == ''">apk</DayflowFormatos>
+    <AndroidPackageFormats Condition="'$(Configuration)' == 'Release'">$(DayflowFormatos)</AndroidPackageFormats>
+    <!-- R8: shrink de Java/AndroidX (dex). -->
+    <AndroidLinkTool Condition="'$(Configuration)' == 'Release'">r8</AndroidLinkTool>
+    <!-- Trim parcial (padrão MAUI). O "full" é opt-in: -p:TrimMode=full. -->
+    <TrimMode Condition="'$(Configuration)' == 'Release' And '$(TrimMode)' == ''">partial</TrimMode>
+    <!-- AOT guiado por perfil: inicialização rápida sem o custo de tamanho do AOT completo. -->
+    <RunAOTCompilation Condition="'$(Configuration)' == 'Release'">true</RunAOTCompilation>
+    <AndroidEnableProfiledAot Condition="'$(Configuration)' == 'Release'">true</AndroidEnableProfiledAot>
+    <!-- AndroidStripILAfterAOT NÃO: com AOT por perfil, métodos fora do perfil ficam sem IL e o app fecha ao abrir. -->
+    <!-- Só ARM64 (tablets reais). x64 serve só a emulador: -p:DayflowAbis="android-arm64%3Bandroid-x64" -->
+    <DayflowAbis Condition="'$(DayflowAbis)' == ''">android-arm64</DayflowAbis>
+    <RuntimeIdentifiers Condition="'$(Configuration)' == 'Release'">$(DayflowAbis)</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <!-- Feature switches de runtime: removem código morto e qualquer caminho de rede embutido no BCL. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebuggerSupport>false</DebuggerSupport>
+    <EventSourceSupport>false</EventSourceSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+    <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+    <AndroidIncludeDebugSymbols>false</AndroidIncludeDebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MauiIcon Include="Resources/AppIcon/appicon.svg" ForegroundFile="Resources/AppIcon/appiconfg.svg" Color="#111111" />
+    <MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#111111" BaseSize="160,160" />
+    <MauiFont Include="Resources/Fonts/*.ttf" />
+    <MauiImage Include="Resources/Images/*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <!-- Só o núcleo de desenho do Microcharts; a View é nossa (GraficoChart), com captura de erro. -->
+    <PackageReference Include="Microcharts.Core" Version="2.0.0.3" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <TrimmerRootAssembly Include="Dayflow.Core" />
+    <TrimmerRootAssembly Include="SQLite-net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Dayflow.Core/Dayflow.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Núcleo sem dependência de MAUI: Domain + Data + Services + Infra.
+       Testável em net10.0 puro, consumido pelo app net10.0-android. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Dayflow.Core</RootNamespace>
+    <!-- CA1848/CA1873: LoggerMessage source-gen seria o ideal; mantido simples. -->
+    <NoWarn>$(NoWarn);CA1848;CA1873;CA1305;CA1307;CA1310;CA1311;CA1304;CA2007</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 1.11.x: SQLitePCLRaw 3 + SourceGear.sqlite3 (SQLite 3.53, nativo Android 16 KB-aligned).
+         A linha 2.1.x do e_sqlite3 tem advisory GHSA-2m69-gcr7-jv3q: não usar bundle_green. -->
+    <PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Dayflow.Core.Tests" />
+  </ItemGroup>
+</Project>

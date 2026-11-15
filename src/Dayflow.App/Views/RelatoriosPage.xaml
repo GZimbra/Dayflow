@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             xmlns:v="clr-namespace:Dayflow.App.Views"
+             x:Class="Dayflow.App.Views.RelatoriosPage"
+             x:DataType="vm:RelatoriosViewModel"
+             Title="Relatórios">
+    <ScrollView SafeAreaEdges="Container">
+        <VerticalStackLayout Padding="{OnIdiom Phone='16,16,16,28', Default='20,20,20,32'}" Spacing="18" MaximumWidthRequest="1200">
+            <!-- Cabeçalho -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="o que foi feito" Style="{StaticResource Sobrelinha}" />
+                    <Label Text="Relatórios" Style="{StaticResource Display}" />
+                    <Label Text="{Binding PeriodoTexto}" Style="{StaticResource Legenda}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="Exportar" ImageSource="ic_compartilhar.png" VerticalOptions="End"
+                        Command="{Binding ExportarCommand}" />
+            </Grid>
+
+            <v:SeletorPeriodoView BindingContext="{Binding Periodo}" />
+
+            <!-- KPIs -->
+            <Grid x:Name="Kpis" ColumnDefinitions="*,*,*,*" ColumnSpacing="12" RowSpacing="12">
+                <Border Style="{StaticResource Cartao}" BackgroundColor="{StaticResource BasePreto}" Stroke="{StaticResource BasePreto}">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="2">
+                        <BoxView HeightRequest="3" WidthRequest="28" Color="{StaticResource BaseLaranja}" HorizontalOptions="Start" Margin="0,0,0,8" />
+                        <Label Grid.Row="1" Text="tempo registrado" Style="{StaticResource Sobrelinha}" TextColor="#A3A3A3" />
+                        <VerticalStackLayout Grid.Row="2">
+                            <Label Text="{Binding TempoTotal}" Style="{StaticResource Display}" TextColor="{StaticResource BaseLaranja}" />
+                            <Label Text="{Binding MediaDia}" FontSize="12.5" TextColor="#A3A3A3" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="2">
+                        <BoxView HeightRequest="3" WidthRequest="28" Color="{StaticResource BaseLaranja}" HorizontalOptions="Start" Margin="0,0,0,8" />
+                        <Label Text="concluídas" Style="{StaticResource Sobrelinha}" />
+                        <Label Text="{Binding QtdConcluidas}" Style="{StaticResource Display}" TextColor="{StaticResource BaseLaranja}" />
+                        <Label Text="tarefas finalizadas" Style="{StaticResource Legenda}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="2">
+                        <BoxView HeightRequest="3" WidthRequest="28" Color="{AppThemeBinding Light={StaticResource BasePreto}, Dark={StaticResource BaseBranco}}" HorizontalOptions="Start" Margin="0,0,0,8" />
+                        <Label Text="em aberto" Style="{StaticResource Sobrelinha}" />
+                        <Label Text="{Binding QtdEmAberto}" Style="{StaticResource Display}" />
+                        <Label Text="{Binding QtdCanceladas, StringFormat='{0} cancelada(s)'}" Style="{StaticResource Legenda}" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="3" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="2">
+                        <BoxView HeightRequest="3" WidthRequest="28" Color="{AppThemeBinding Light={StaticResource BasePreto}, Dark={StaticResource BaseBranco}}" HorizontalOptions="Start" Margin="0,0,0,8" />
+                        <Label Text="taxa de conclusão" Style="{StaticResource Sobrelinha}" />
+                        <Label Text="{Binding Taxa}" Style="{StaticResource Display}" />
+                        <Label Text="canceladas fora da conta" Style="{StaticResource Legenda}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Projetos | Atividades -->
+            <Grid x:Name="Listas" ColumnDefinitions="*,*" ColumnSpacing="12" RowSpacing="12">
+                <Border Style="{StaticResource Cartao}" VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Tempo por projeto" Style="{StaticResource Subtitulo}" />
+                            <Label Grid.Column="1" Text="{Binding TempoTotal}" FontFamily="PlexMono" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+                        </Grid>
+                        <Label Text="Sem tempo registrado no período." Style="{StaticResource Legenda}" IsVisible="{Binding SemTempo}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding PorProjeto}" Spacing="14">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:LinhaProjetoVm">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                            <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="3" Color="{Binding Cor}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Nome}" FontFamily="ManropeSemiBold" LineBreakMode="WordWrap" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding Tempo}" FontFamily="PlexMono" VerticalOptions="Center" />
+                                            <Label Grid.Column="3" Text="{Binding Percentual}" Style="{StaticResource Legenda}" WidthRequest="40"
+                                                   HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        </Grid>
+                                        <Border HeightRequest="8" StrokeThickness="0" StrokeShape="RoundRectangle 4" Padding="0"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}">
+                                            <Grid ColumnSpacing="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="{Binding ColunaCheia}" />
+                                                    <ColumnDefinition Width="{Binding ColunaVazia}" />
+                                                </Grid.ColumnDefinitions>
+                                                <BoxView Color="{Binding Cor}" CornerRadius="4" />
+                                            </Grid>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource Cartao}" VerticalOptions="Start">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="Atividades" Style="{StaticResource Subtitulo}" />
+                        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
+                            <Button Text="{Binding QtdConcluidas, StringFormat='Concluídas · {0}'}" Style="{StaticResource Chip}" Margin="0,0,8,8"
+                                    Command="{Binding MudarAbaCommand}" CommandParameter="concluidas">
+                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding AbaConcluidas}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" /><Setter Property="BorderColor" Value="{StaticResource BaseLaranja}" />
+                                    <Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                </DataTrigger></Button.Triggers>
+                            </Button>
+                            <Button Text="{Binding QtdEmAberto, StringFormat='Em aberto · {0}'}" Style="{StaticResource Chip}" Margin="0,0,8,8"
+                                    Command="{Binding MudarAbaCommand}" CommandParameter="aberto">
+                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding AbaEmAberto}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                                    <Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                </DataTrigger></Button.Triggers>
+                            </Button>
+                            <Button Text="{Binding QtdCanceladas, StringFormat='Canceladas · {0}'}" Style="{StaticResource Chip}" Margin="0,0,8,8"
+                                    Command="{Binding MudarAbaCommand}" CommandParameter="canceladas">
+                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding AbaCanceladas}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="BorderColor" Value="{StaticResource BasePreto}" />
+                                    <Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                </DataTrigger></Button.Triggers>
+                            </Button>
+                        </FlexLayout>
+                        <Label Text="{Binding VazioLista}" Style="{StaticResource Legenda}" IsVisible="{Binding ListaVazia}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding ListaAtual}" Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:LinhaTarefaVm">
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="0"
+                                            BackgroundColor="{AppThemeBinding Light={StaticResource SuperficieAlta}, Dark={StaticResource SuperficieAltaEscuro}}">
+                                        <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="12" Padding="0,0,12,0">
+                                            <BoxView Color="{Binding Cor}" />
+                                            <VerticalStackLayout Grid.Column="1" Padding="0,10" Spacing="2">
+                                                <Label Text="{Binding Titulo}" FontFamily="ManropeSemiBold" LineBreakMode="WordWrap" TextDecorations="{Binding Riscado}" />
+                                                <Label Text="{Binding Detalhe}" Style="{StaticResource Legenda}" LineBreakMode="WordWrap" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 9" Padding="8,2" BackgroundColor="{Binding StatusFundo}" HorizontalOptions="End">
+                                                    <Label Text="{Binding Status}" FontSize="10" FontFamily="ManropeSemiBold" TextColor="{Binding StatusTexto}" CharacterSpacing="0.5" />
+                                                </Border>
+                                                <Label Text="{Binding Tempo}" FontFamily="PlexMono" FontSize="13" HorizontalTextAlignment="End" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Button Text="{Binding TextoMais}" Style="{StaticResource BotaoSecundario}" IsVisible="{Binding TemMais}"
+                                Command="{Binding MostrarMaisCommand}" HorizontalOptions="Fill" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Economia gerada (relatórios de conclusão) -->
+            <Border Style="{StaticResource Cartao}">
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Spacing="2">
+                            <BoxView HeightRequest="3" WidthRequest="28" Color="{StaticResource BaseLaranja}" HorizontalOptions="Start" Margin="0,0,0,6" />
+                            <Label Text="Economia gerada" Style="{StaticResource Subtitulo}" />
+                            <Label Text="Tempo poupado de outras pessoas, informado nos relatórios de conclusão." Style="{StaticResource Legenda}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1" Text="Texto" Style="{StaticResource BotaoSecundario}" VerticalOptions="End"
+                                Command="{Binding ExportarEconomiaTextoCommand}" />
+                        <Button Grid.Column="2" Text="CSV" Style="{StaticResource BotaoSecundario}" VerticalOptions="End"
+                                Command="{Binding ExportarEconomiaCsvCommand}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Border Style="{StaticResource Cartao}" BackgroundColor="{StaticResource BasePreto}" Stroke="{StaticResource BasePreto}">
+                            <VerticalStackLayout>
+                                <Label Text="recorrente por mês" Style="{StaticResource Sobrelinha}" TextColor="#A3A3A3" />
+                                <Label Text="{Binding EconomiaMensal}" Style="{StaticResource Display}" TextColor="{StaticResource BaseLaranja}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource Cartao}">
+                            <VerticalStackLayout>
+                                <Label Text="pontual" Style="{StaticResource Sobrelinha}" />
+                                <Label Text="{Binding EconomiaPontual}" Style="{StaticResource Display}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                    <Label Text="Nenhum relatório de conclusão no período. Conclua uma tarefa de projeto para registrar." Style="{StaticResource Legenda}" IsVisible="{Binding SemEconomia}" />
+
+                    <!-- Tabela por projeto: tela larga. No celular em pé vira lista (abaixo), sem rolagem lateral. -->
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="{DynamicResource TelaLarga}">
+                    <VerticalStackLayout x:Name="TabelaEconomia" Spacing="0">
+                        <Grid ColumnDefinitions="*,70,90,100" ColumnSpacing="8" Padding="12,8" BackgroundColor="{StaticResource BasePreto}">
+                            <Label Text="PROJETO" FontSize="10.5" FontFamily="ManropeSemiBold" TextColor="{StaticResource BaseBranco}" />
+                            <Label Grid.Column="1" Text="RELAT." FontSize="10.5" FontFamily="ManropeSemiBold" TextColor="{StaticResource BaseBranco}" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="2" Text="PONTUAL" FontSize="10.5" FontFamily="ManropeSemiBold" TextColor="{StaticResource BaseBranco}" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="3" Text="POR MÊS" FontSize="10.5" FontFamily="ManropeSemiBold" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" />
+                        </Grid>
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding EconomiaPorProjeto}">
+                            <BindableLayout.EmptyView>
+                                <Label Text="—" Style="{StaticResource Legenda}" Padding="12,10" />
+                            </BindableLayout.EmptyView>
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:LinhaEconomiaProjetoVm">
+                                    <VerticalStackLayout>
+                                        <Grid ColumnDefinitions="*,70,90,100" ColumnSpacing="8" Padding="12,10">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="3" Color="{Binding Cor}" VerticalOptions="Center" />
+                                                <Label Text="{Binding Nome}" FontFamily="ManropeSemiBold" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding Relatorios}" FontFamily="PlexMono" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding PontualValor}" FontFamily="PlexMono" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                            <Label Grid.Column="3" Text="{Binding PorMes}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                        </Grid>
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                    </ScrollView>
+
+                    <VerticalStackLayout IsVisible="{DynamicResource TelaEstreita}" Spacing="0">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding EconomiaPorProjeto}" Spacing="0">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:LinhaEconomiaProjetoVm">
+                                    <VerticalStackLayout Spacing="4" Padding="0,10">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                            <BoxView WidthRequest="10" HeightRequest="10" CornerRadius="3" Color="{Binding Cor}" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="{Binding Nome}" FontFamily="ManropeSemiBold" LineBreakMode="WordWrap" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" Padding="18,0,0,0">
+                                            <VerticalStackLayout>
+                                                <Label Text="relat." Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                <Label Text="{Binding Relatorios}" FontFamily="PlexMono" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="1">
+                                                <Label Text="pontual" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                <Label Text="{Binding PontualValor}" FontFamily="PlexMono" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="2">
+                                                <Label Text="por mês" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                <Label Text="{Binding PorMes}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <BoxView HeightRequest="1" Margin="0,8,0,0" Color="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource LinhaEscuro}}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <Label Text="detalhes por tarefa" Style="{StaticResource Sobrelinha}" IsVisible="{Binding SemEconomia, Converter={StaticResource Negar}}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding EconomiaItens}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LinhaEconomiaItemVm">
+                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="12,10"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource SuperficieAlta}, Dark={StaticResource SuperficieAltaEscuro}}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding Titulo}" FontFamily="ManropeSemiBold" />
+                                            <Label Text="{Binding Detalhe}" Style="{StaticResource Legenda}" />
+                                            <Label Text="{Binding Resumo}" IsVisible="{Binding TemResumo}" FontSize="13" LineBreakMode="WordWrap" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Valor}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" VerticalOptions="Start" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="{Binding EconomiaItensOcultos}" Style="{StaticResource Legenda}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

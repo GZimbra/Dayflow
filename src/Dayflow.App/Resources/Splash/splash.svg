@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dayflow — marca autoral.
+  Conceito: o sol laranja nascendo sobre a linha do horizonte (o dia começando)
+  e o traço branco que sobe em degraus e termina em check (o dia fluindo até a conclusão).
+  Desenhado dentro da área segura central do ícone adaptativo (66/108).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="456" height="456" viewBox="0 0 456 456">
+  <g transform="translate(228 236) scale(1.15)">
+    <!-- sol -->
+    <path d="M-92,22 A92,92 0 0 1 92,22 Z" fill="#F26A1B"/>
+    <!-- horizonte -->
+    <rect x="-118" y="22" width="236" height="16" rx="8" fill="#FFFFFF"/>
+    <!-- fluxo + check -->
+    <path d="M-70,-6 L-34,-6 L-34,-34 L2,-34 L18,-14 L74,-78"
+          fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

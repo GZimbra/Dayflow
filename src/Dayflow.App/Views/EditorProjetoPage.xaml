@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             x:Class="Dayflow.App.Views.EditorProjetoPage"
+             x:DataType="vm:EditorProjetoViewModel"
+             BackgroundColor="#99000000">
+    <ScrollView SafeAreaEdges="Container" VerticalOptions="Center">
+        <Border Style="{StaticResource Cartao}" MaximumWidthRequest="520" Margin="{OnIdiom Phone='12', Default='24'}" Padding="{OnIdiom Phone='18', Default='28'}">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="{Binding Cabecalho}" Style="{StaticResource Titulo}" />
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Nome" Style="{StaticResource Sobrelinha}" />
+                    <Entry Text="{Binding Nome}" Placeholder="Ex.: Integração MES" MaxLength="80" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Cor" Style="{StaticResource Sobrelinha}" />
+                    <FlexLayout BindableLayout.ItemsSource="{Binding Cores}" Wrap="Wrap">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:CorOpcao">
+                                <Border WidthRequest="44" HeightRequest="44" Margin="0,0,10,10" StrokeShape="RoundRectangle 22"
+                                        BackgroundColor="{Binding Cor}" StrokeThickness="3" Stroke="Transparent">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Selecionada}" Value="True">
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Linha}, Dark={StaticResource BaseBranco}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:EditorProjetoViewModel}}, x:DataType=vm:EditorProjetoViewModel}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Image Source="ic_check.png" WidthRequest="18" HeightRequest="18" IsVisible="{Binding Selecionada}" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                    <Button Grid.Column="1" Text="Cancelar" Style="{StaticResource BotaoSecundario}" Command="{Binding CancelarCommand}" />
+                    <Button Grid.Column="2" Text="Salvar" Command="{Binding SalvarCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </ScrollView>
+</ContentPage>

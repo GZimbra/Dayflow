@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Dayflow.App.ViewModels"
+             xmlns:v="clr-namespace:Dayflow.App.Views"
+             xmlns:c="clr-namespace:Dayflow.App.Controles"
+             x:Class="Dayflow.App.Views.GraficosPage"
+             x:DataType="vm:GraficosViewModel"
+             Title="Gráficos">
+    <ScrollView SafeAreaEdges="Container">
+        <VerticalStackLayout Padding="{OnIdiom Phone='16,16', Default='28,24'}" Spacing="20" MaximumWidthRequest="1280">
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout>
+                    <Label Text="visão do período" Style="{StaticResource Sobrelinha}" />
+                    <Label Text="Gráficos" Style="{StaticResource Display}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="Exportar PNG" ImageSource="ic_compartilhar.png" VerticalOptions="End"
+                        Command="{Binding ExportarPngCommand}" />
+            </Grid>
+
+            <v:SeletorPeriodoView BindingContext="{Binding Periodo}" />
+
+            <Grid x:Name="Grade" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="16">
+                <!-- Horas por projeto -->
+                <Border Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                            <Label Text="Horas por projeto" Style="{StaticResource Subtitulo}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="Barras" Style="{StaticResource Chip}" Command="{Binding AlternarHorasCommand}" CommandParameter="barras">
+                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding MostrarBarras}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                </DataTrigger></Button.Triggers>
+                            </Button>
+                            <Button Grid.Column="2" Text="Pizza" Style="{StaticResource Chip}" Command="{Binding AlternarHorasCommand}" CommandParameter="pizza">
+                                <Button.Triggers><DataTrigger TargetType="Button" Binding="{Binding MostrarPizza}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BasePreto}" /><Setter Property="TextColor" Value="{StaticResource BaseBranco}" />
+                                </DataTrigger></Button.Triggers>
+                            </Button>
+                        </Grid>
+                        <Label Text="Sem tempo registrado no período." Style="{StaticResource Legenda}" IsVisible="{Binding SemHoras}" />
+                        <c:GraficoChart Chart="{Binding HorasBarras}" HeightRequest="{DynamicResource AltGrafico}" IsVisible="{Binding MostrarBarras}" />
+                        <c:GraficoChart Chart="{Binding HorasPizza}" HeightRequest="{DynamicResource AltGrafico}" IsVisible="{Binding MostrarPizza}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Concluídas por dia -->
+                <Border Grid.Column="1" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Tarefas concluídas por dia" Style="{StaticResource Subtitulo}" />
+                        <Label Text="{Binding TotalConcluidas}" Style="{StaticResource Legenda}" />
+                        <c:GraficoConcluidas Dados="{Binding ConcluidasDias}" HeightRequest="{DynamicResource AltGrafico}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Tempo por tarefa de vários dias -->
+                <Border Grid.Row="1" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Tempo por tarefa de vários dias" Style="{StaticResource Subtitulo}" />
+                        <Label Text="Nenhuma tarefa com tempo em 2 ou mais dias no período." Style="{StaticResource Legenda}" IsVisible="{Binding SemMultiDia}" />
+                        <c:GraficoEmpilhado Dados="{Binding Empilhado}" HeightRequest="{DynamicResource AltGraficoEmpilhado}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Taxa de conclusão -->
+                <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Cartao}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Taxa de conclusão por projeto" Style="{StaticResource Subtitulo}" />
+                        <Label Text="concluídas ÷ (concluídas + em aberto). Canceladas não entram." Style="{StaticResource Legenda}" />
+                        <Label Text="Sem tarefas no período." Style="{StaticResource Legenda}" IsVisible="{Binding SemTaxa}" />
+                        <c:GraficoChart Chart="{Binding TaxaConclusao}" HeightRequest="{DynamicResource AltGrafico}" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Economia por projeto (relatórios de conclusão) -->
+            <Border Style="{StaticResource Cartao}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Economia por projeto" Style="{StaticResource Subtitulo}" />
+                    <Label Text="Valores informados nos relatórios de conclusão. Por ocorrência = minutos × pessoas. Mês: dia útil × 21, semana × 52/12." Style="{StaticResource Legenda}" />
+                    <Label Text="Nenhum relatório de conclusão no período." Style="{StaticResource Legenda}" IsVisible="{Binding SemEconomia}" />
+                    <!-- Tabela larga: rola na horizontal em pé, em vez de espremer as colunas -->
+                    <ContentView IsVisible="{DynamicResource TelaLarga}">
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Default" IsVisible="{Binding SemEconomia, Converter={StaticResource Negar}}">
+                    <VerticalStackLayout x:Name="TabelaEconomia" Spacing="0" WidthRequest="900">
+                        <Grid ColumnDefinitions="*,110,90,130,190,190" ColumnSpacing="12" Padding="0,0,0,8">
+                            <Label Text="TAREFA" Style="{StaticResource Sobrelinha}" />
+                            <Label Grid.Column="1" Text="MIN/VEZ" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="2" Text="PESSOAS" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="3" Text="FREQUÊNCIA" Style="{StaticResource Sobrelinha}" />
+                            <Label Grid.Column="4" Text="POR OCORRÊNCIA" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="5" Text="POR MÊS" Style="{StaticResource Sobrelinha}" HorizontalTextAlignment="End" />
+                        </Grid>
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding EconomiaProjetos}" Spacing="14">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GrupoEconomiaVm">
+                                    <VerticalStackLayout Spacing="0">
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Linha}, Dark=#2B2B2B}" />
+                                        <HorizontalStackLayout Spacing="10" Padding="0,10,0,4">
+                                            <BoxView WidthRequest="12" HeightRequest="12" CornerRadius="6" Color="{Binding Cor}" VerticalOptions="Center" />
+                                            <Label Text="{Binding Nome}" FontFamily="ManropeBold" VerticalOptions="Center" />
+                                            <Label Text="{Binding Subtitulo}" Style="{StaticResource Legenda}" VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Itens}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:ItemEconomiaVm">
+                                                    <Grid ColumnDefinitions="*,110,90,130,190,190" ColumnSpacing="12" Padding="22,8,0,8">
+                                                        <VerticalStackLayout>
+                                                            <Label Text="{Binding Tarefa}" LineBreakMode="WordWrap" />
+                                                            <Label Text="{Binding Detalhe}" Style="{StaticResource Legenda}" LineBreakMode="WordWrap" />
+                                                        </VerticalStackLayout>
+                                                        <Label Grid.Column="1" Text="{Binding MinutosOcorrencia}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                                        <Label Grid.Column="2" Text="{Binding Pessoas}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                                        <Label Grid.Column="3" Text="{Binding Frequencia}" />
+                                                        <Label Grid.Column="4" Text="{Binding PorOcorrencia}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                                        <Label Grid.Column="5" Text="{Binding PorMes}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
+                                        <Grid ColumnDefinitions="*,110,90,130,190,190" ColumnSpacing="12" Padding="22,6,0,0">
+                                            <Label Text="Subtotal do projeto" Style="{StaticResource Legenda}" FontFamily="ManropeSemiBold" />
+                                            <Label Grid.Column="2" Text="{Binding Pessoas}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                            <Label Grid.Column="4" Text="{Binding Pontual}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                            <Label Grid.Column="5" Text="{Binding PorMes}" FontFamily="PlexMono" FontAttributes="Bold" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Border BackgroundColor="{StaticResource BasePreto}" StrokeThickness="0" StrokeShape="RoundRectangle 8" Margin="0,16,0,0" Padding="14,12">
+                            <Grid ColumnDefinitions="*,110,90,130,190,190" ColumnSpacing="12">
+                                <VerticalStackLayout>
+                                    <Label Text="Total geral" FontFamily="ManropeBold" TextColor="{StaticResource BaseBranco}" />
+                                    <Label Text="{Binding EconomiaTotalRelatorios}" FontSize="12" TextColor="#B3FFFFFF" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="{Binding EconomiaTotalPessoas}" FontFamily="PlexMono" TextColor="{StaticResource BaseBranco}" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="4" VerticalOptions="Center">
+                                    <Label Text="{Binding EconomiaTotalPontual}" FontFamily="PlexMono" TextColor="{StaticResource BaseBranco}" HorizontalTextAlignment="End" />
+                                    <Label Text="pontual" FontSize="11" TextColor="#B3FFFFFF" HorizontalTextAlignment="End" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="5" VerticalOptions="Center">
+                                    <Label Text="{Binding EconomiaTotalMes}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" />
+                                    <Label Text="recorrente por mês" FontSize="11" TextColor="#B3FFFFFF" HorizontalTextAlignment="End" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                    </ScrollView>
+                    </ContentView>
+
+                    <!-- Celular em pé: mesma informação em lista, sem rolagem lateral -->
+                    <ContentView IsVisible="{DynamicResource TelaEstreita}">
+                    <VerticalStackLayout Spacing="14" IsVisible="{Binding SemEconomia, Converter={StaticResource Negar}}">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding EconomiaProjetos}" Spacing="14">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:GrupoEconomiaVm">
+                                    <VerticalStackLayout Spacing="8">
+                                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Linha}, Dark=#2B2B2B}" />
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                            <BoxView WidthRequest="12" HeightRequest="12" CornerRadius="6" Color="{Binding Cor}" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1">
+                                                <Label Text="{Binding Nome}" FontFamily="ManropeBold" LineBreakMode="WordWrap" />
+                                                <Label Text="{Binding Subtitulo}" Style="{StaticResource Legenda}" LineBreakMode="WordWrap" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Itens}" Spacing="8">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:ItemEconomiaVm">
+                                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="12,10"
+                                                            BackgroundColor="{AppThemeBinding Light={StaticResource SuperficieAlta}, Dark={StaticResource SuperficieAltaEscuro}}">
+                                                        <VerticalStackLayout Spacing="6">
+                                                            <Label Text="{Binding Tarefa}" FontFamily="ManropeSemiBold" LineBreakMode="WordWrap" />
+                                                            <Label Text="{Binding Detalhe}" Style="{StaticResource Legenda}" LineBreakMode="WordWrap" />
+                                                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="6">
+                                                                <VerticalStackLayout>
+                                                                    <Label Text="min/vez × pessoas" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                                    <Label FontFamily="PlexMono">
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <Span Text="{Binding MinutosOcorrencia}" />
+                                                                                <Span Text=" × " />
+                                                                                <Span Text="{Binding Pessoas}" />
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+                                                                    </Label>
+                                                                </VerticalStackLayout>
+                                                                <VerticalStackLayout Grid.Column="1">
+                                                                    <Label Text="frequência" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                                    <Label Text="{Binding Frequencia}" LineBreakMode="WordWrap" />
+                                                                </VerticalStackLayout>
+                                                                <VerticalStackLayout Grid.Row="1">
+                                                                    <Label Text="por ocorrência" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                                    <Label Text="{Binding PorOcorrencia}" FontFamily="PlexMono" />
+                                                                </VerticalStackLayout>
+                                                                <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                                                                    <Label Text="por mês" Style="{StaticResource Sobrelinha}" FontSize="10" />
+                                                                    <Label Text="{Binding PorMes}" FontFamily="PlexMono" TextColor="{StaticResource BaseLaranja}" />
+                                                                </VerticalStackLayout>
+                                                            </Grid>
+                                                        </VerticalStackLayout>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
+                                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" Padding="4,0">
+                                            <Label Text="Subtotal pontual" Style="{StaticResource Legenda}" FontFamily="ManropeSemiBold" />
+                                            <Label Grid.Column="1" Text="{Binding Pontual}" FontFamily="PlexMono" HorizontalTextAlignment="End" />
+                                            <Label Grid.Row="1" Text="Subtotal por mês" Style="{StaticResource Legenda}" FontFamily="ManropeSemiBold" />
+                                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding PorMes}" FontFamily="PlexMono" FontAttributes="Bold" TextColor="{StaticResource BaseLaranja}" HorizontalTextAlignment="End" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Border BackgroundColor="{StaticResource BasePreto}" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="4">
+                                <Label Text="Total geral" FontFamily="ManropeBold" TextColor="{StaticResource BaseBranco}" />
+                                <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding EconomiaTotalRelatorios}" FontSize="12" TextColor="#B3FFFFFF" LineBreakMode="WordWrap" />
+                                <Label Grid.Row="2" Text="Pessoas" FontSize="13" TextColor="#B3FFFFFF" />
+                                <Label Grid.Row="2" Grid.Column="1" Text="{Binding EconomiaTotalPessoas}" FontFamily="PlexMono" TextColor="{StaticResource BaseBranco}" HorizontalTextAlignment="End" />
+                                <Label Grid.Row="3" Text="Pontual · por mês" FontSize="13" TextColor="#B3FFFFFF" />
+                                <Label Grid.Row="3" Grid.Column="1" FontFamily="PlexMono" HorizontalTextAlignment="End">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding EconomiaTotalPontual}" TextColor="{StaticResource BaseBranco}" />
+                                            <Span Text=" · " TextColor="#B3FFFFFF" />
+                                            <Span Text="{Binding EconomiaTotalMes}" TextColor="{StaticResource BaseLaranja}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+                    </ContentView>
+                    <VerticalStackLayout Spacing="0" IsVisible="{Binding SemEconomia, Converter={StaticResource Negar}}">
+                        <Label Text="Pessoas no total = soma por tarefa; a mesma pessoa pode ser contada em mais de uma melhoria." Style="{StaticResource Legenda}" FontSize="12" Margin="0,8,0,0" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:v="clr-namespace:Dayflow.App.Views"
+       x:Class="Dayflow.App.AppShell"
+       x:Name="Raiz"
+       FlyoutBehavior="Locked"
+       FlyoutWidth="232"
+       Shell.NavBarIsVisible="False">
+
+    <Shell.FlyoutHeader>
+        <Grid x:Name="CabecalhoTrilho" Padding="24,32,24,28" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Image Source="marca_dayflow.png" WidthRequest="40" HeightRequest="40" />
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0" IsVisible="{DynamicResource TrilhoComRotulos}">
+                <Label Text="Dayflow" FontFamily="ManropeBold" FontSize="20" TextColor="{StaticResource BaseBranco}" />
+                <Label Text="rotina de trabalho" FontSize="12" TextColor="#9A9A9A" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <Shell.ItemTemplate>
+        <DataTemplate x:DataType="BaseShellItem">
+            <Grid ColumnDefinitions="56,*" HeightRequest="52" Margin="{DynamicResource MargemItemTrilho}">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Selected">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource BaseLaranja}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Image Source="{Binding Icon}" WidthRequest="22" HeightRequest="22" HorizontalOptions="Center" />
+                <Label Grid.Column="1" Text="{Binding Title}" FontFamily="ManropeSemiBold" FontSize="15"
+                       TextColor="{StaticResource BaseBranco}" VerticalOptions="Center" IsVisible="{DynamicResource TrilhoComRotulos}" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <Shell.FlyoutFooter>
+        <Label Text="100% offline · sem rede" Margin="24,16,24,24" FontSize="11.5" TextColor="#7A7A7A" IsVisible="{DynamicResource TrilhoComRotulos}" />
+    </Shell.FlyoutFooter>
+
+    <FlyoutItem Title="Agenda" Icon="ic_agenda.png" Route="agenda">
+        <ShellContent ContentTemplate="{DataTemplate v:AgendaPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Rotinas" Icon="ic_rotina.png" Route="rotinas">
+        <ShellContent ContentTemplate="{DataTemplate v:RotinasPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Relatórios" Icon="ic_relatorio.png" Route="relatorios">
+        <ShellContent ContentTemplate="{DataTemplate v:RelatoriosPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Gráficos" Icon="ic_grafico.png" Route="graficos">
+        <ShellContent ContentTemplate="{DataTemplate v:GraficosPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Projetos" Icon="ic_projetos.png" Route="projetos">
+        <ShellContent ContentTemplate="{DataTemplate v:ProjetosPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Ajustes" Icon="ic_ajustes.png" Route="ajustes">
+        <ShellContent ContentTemplate="{DataTemplate v:AjustesPage}" />
+    </FlyoutItem>
+</Shell>
